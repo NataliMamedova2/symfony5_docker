@@ -1,0 +1,34 @@
+version: "3.4"
+services:
+  # PHP service
+  app_test:
+    build: ./docker/php/.
+    container_name: app-php-test
+    working_dir: /var/www/site
+    volumes:
+      - ./site:/var/www/site
+    environment:
+      APP_ENV: test
+    networks:
+      - app-network
+
+  # Mysql service
+  mysql:
+    image: mysql:5.7.22
+    container_name: app-mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=app_test
+      - MYSQL_PASSWORD=apppass
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 8982:3306
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
